@@ -1,0 +1,54 @@
+.popup {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.popup h1 {
+  font-size: 30px;
+}
+.popup p {
+  font-size: 20px;
+}
+.popup button {
+  padding: 10px 20px;
+  border-radius: 10px;
+  background-color: aqua;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  cursor: pointer;
+}
+.popup button div {
+  background-image: url("../../../assets/qr.png");
+  width: 32px;
+  height: 32px;
+}
+
+.back {
+  position: absolute;
+  left: 50px;
+  top: 50px;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  transition: 100ms all;
+}
+.back:hover {
+  width: 45px;
+  height: 45px;
+}
+
+.back img {
+  width: 100%;
+  height: 100%;
+}

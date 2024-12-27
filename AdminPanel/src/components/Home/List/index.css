@@ -1,0 +1,22 @@
+.list {
+  width: 100%;
+  height: calc(100vh - 150px);
+  display: flex;
+  align-items: center;
+  background-color: aqua;
+}
+
+.blocked-row {
+  background-color: rgb(251, 251, 35);
+}
+.blocked-row:hover {
+  background-color: yellow;
+
+}
+
+
+@media screen and (max-width: 500px) {
+  .list {
+    zoom: 0.8;
+  }
+}
