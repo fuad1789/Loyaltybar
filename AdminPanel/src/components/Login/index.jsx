@@ -13,7 +13,7 @@ function LoginForm({ onLogin }) {
     setLoading(true);
     try {
       const response = await axios.post(
-        "https://loyaltybar.onrender.com/admin/login",
+        "https://loyaltybar-bl4z.onrender.com/admin/login",
         {
           email,
           password,

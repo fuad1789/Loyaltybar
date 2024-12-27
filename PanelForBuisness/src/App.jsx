@@ -27,7 +27,7 @@ function App() {
 
     try {
       const response = await axios.post(
-        "https://loyaltybar.onrender.com/buisness/adminLogin",
+        "https://loyaltybar-bl4z.onrender.com/buisness/adminLogin",
         { buisnessId }
       );
 

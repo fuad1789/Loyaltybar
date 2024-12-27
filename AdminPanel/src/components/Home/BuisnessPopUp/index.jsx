@@ -31,7 +31,7 @@ export default function Index({ setIsModal, isModal }) {
 
   const blockBuisness = async () => {
     await axios
-      .post(`https://loyaltybar.onrender.com/buisness/block`, {
+      .post(`https://loyaltybar-bl4z.onrender.com/buisness/block`, {
         buisnessId: isModal.row._id,
       })
       .catch((res) => {
@@ -44,7 +44,7 @@ export default function Index({ setIsModal, isModal }) {
 
   const deleteBuisness = async () => {
     await axios
-      .delete(`https://loyaltybar.onrender.com/buisness/delete`, {
+      .delete(`https://loyaltybar-bl4z.onrender.com/buisness/delete`, {
         data: { buisnessId: isModal.row._id },
       })
       .catch((res) => {

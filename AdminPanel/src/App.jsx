@@ -12,7 +12,7 @@ function App() {
   useEffect(() => {
     const islog = async () => {
       await axios
-        .post(`https://loyaltybar.onrender.com/admin/token`, {
+        .post(`https://loyaltybar-bl4z.onrender.com/admin/token`, {
           id: localStorage.getItem("isLoggedIn"),
         })
         .then((res) => {

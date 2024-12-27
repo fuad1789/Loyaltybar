@@ -70,11 +70,14 @@ function QrVideo() {
     setIsScanning(false);
 
     axios
-      .post("https://loyaltybar.onrender.com/buisness/updateUserShavedCount", {
-        userId: result.data,
-        currentTime: new Date().toISOString(),
-        buisnessId: localStorage.getItem("isLoggedIn").toString(),
-      })
+      .post(
+        "https://loyaltybar-bl4z.onrender.com/buisness/updateUserShavedCount",
+        {
+          userId: result.data,
+          currentTime: new Date().toISOString(),
+          buisnessId: localStorage.getItem("isLoggedIn").toString(),
+        }
+      )
       .then((response) => {
         if (response.data.status === "OK") {
           if (response.data.user.shavedCount === 0) {
@@ -89,7 +92,7 @@ function QrVideo() {
           }
 
           // Socket.IO ile sunucuya mesaj gönder
-          const socket = io("https://loyaltybar.onrender.com");
+          const socket = io("https://loyaltybar-bl4z.onrender.com");
           socket.emit("qrScanned", result.data); // Tarama verilerini iletin
         } else {
           setMessage(response.data.msg || "Ein Fehler ist aufgetreten.");
