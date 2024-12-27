@@ -31,7 +31,7 @@ export default function Index({ setIsModal, isModal }) {
 
   const blockBuisness = async () => {
     await axios
-      .post(`http://localhost:3000/buisness/block`, {
+      .post(`https://loyaltybar.onrender.com/buisness/block`, {
         buisnessId: isModal.row._id,
       })
       .catch((res) => {
@@ -44,7 +44,7 @@ export default function Index({ setIsModal, isModal }) {
 
   const deleteBuisness = async () => {
     await axios
-      .delete(`http://localhost:3000/buisness/delete`, {
+      .delete(`https://loyaltybar.onrender.com/buisness/delete`, {
         data: { buisnessId: isModal.row._id },
       })
       .catch((res) => {

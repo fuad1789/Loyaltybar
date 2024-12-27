@@ -70,7 +70,7 @@ function QrVideo() {
     setIsScanning(false);
 
     axios
-      .post("http://localhost:3000/buisness/updateUserShavedCount", {
+      .post("https://loyaltybar.onrender.com/buisness/updateUserShavedCount", {
         userId: result.data,
         currentTime: new Date().toISOString(),
         buisnessId: localStorage.getItem("isLoggedIn").toString(),
@@ -78,7 +78,9 @@ function QrVideo() {
       .then((response) => {
         if (response.data.status === "OK") {
           if (response.data.user.shavedCount === 0) {
-            setSucsessMessage("Sie haben 10 Rasuren erreicht und einen Rabatt gewonnen!");
+            setSucsessMessage(
+              "Sie haben 10 Rasuren erreicht und einen Rabatt gewonnen!"
+            );
             setShowConfetti(true);
           } else {
             setSucsessMessage("QR-Code erfolgreich gescannt!");
@@ -87,7 +89,7 @@ function QrVideo() {
           }
 
           // Socket.IO ile sunucuya mesaj gönder
-          const socket = io("http://localhost:3000");
+          const socket = io("https://loyaltybar.onrender.com");
           socket.emit("qrScanned", result.data); // Tarama verilerini iletin
         } else {
           setMessage(response.data.msg || "Ein Fehler ist aufgetreten.");
@@ -184,7 +186,10 @@ function QrVideo() {
           {showConfetti && (
             <div className="confeti">
               <Confetti width={window.innerWidth} height={window.innerHeight} />
-              <h1>Herzlichen Glückwunsch zu Ihrem 10. Haarschnitt, Sie haben einen Rabatt gewonnen</h1>
+              <h1>
+                Herzlichen Glückwunsch zu Ihrem 10. Haarschnitt, Sie haben einen
+                Rabatt gewonnen
+              </h1>
             </div>
           )}
         </div>

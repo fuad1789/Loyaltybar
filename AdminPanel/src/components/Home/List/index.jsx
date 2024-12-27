@@ -23,7 +23,7 @@ export default function DataTable() {
       try {
         const response = await axios({
           method: "get",
-          url: `http://localhost:3000/buisness/getall`,
+          url: `https://loyaltybar.onrender.com/buisness/getall`,
           headers: {
             "ngrok-skip-browser-warning": "true",
             "Content-Type": "application/json",

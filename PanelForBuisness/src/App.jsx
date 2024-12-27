@@ -27,7 +27,7 @@ function App() {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/buisness/adminLogin",
+        "https://loyaltybar.onrender.com/buisness/adminLogin",
         { buisnessId }
       );
 
@@ -73,7 +73,11 @@ function App() {
           color="primary"
           disabled={loading}
         >
-          {loading ? <CircularProgress size={24} color="inherit" /> : "Einloggen"}
+          {loading ? (
+            <CircularProgress size={24} color="inherit" />
+          ) : (
+            "Einloggen"
+          )}
         </Button>
       </form>
       <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>

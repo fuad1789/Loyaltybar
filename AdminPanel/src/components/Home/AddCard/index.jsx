@@ -30,7 +30,7 @@ export default function Index({ isFormOpen, setIsFormOpen }) {
     };
 
     axios
-      .post(`http://localhost:3000/buisness/addnew`, {
+      .post(`https://loyaltybar.onrender.com/buisness/addnew`, {
         ...data,
         adminId: localStorage.getItem("isLoggedIn"),
       })
