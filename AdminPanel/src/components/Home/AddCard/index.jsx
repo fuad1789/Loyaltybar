@@ -27,6 +27,7 @@ export default function Index({ isFormOpen, setIsFormOpen }) {
       buisnessName: e.target.isim.value,
       buisnessNumber: e.target.tel.value,
       owner: e.target.owner.value,
+      userCount: e.target.userCount.value,
     };
 
     axios
@@ -65,10 +66,23 @@ export default function Index({ isFormOpen, setIsFormOpen }) {
             <label htmlFor="tel">İşletme telefon numarası:</label>
             <input type="text" id="tel" required />
           </div>
-          <div>
-            <label htmlFor="owner">İşletme sahibi:</label>
-            <input type="text" id="owner" required />
-          </div>
+          <span
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              width: "85%",
+              gap: "10px",
+            }}
+          >
+            <div style={{ width: "70%" }}>
+              <label htmlFor="owner">İşletme sahibi:</label>
+              <input type="text" id="owner" required />
+            </div>
+            <div style={{ width: "30%" }}>
+              <label htmlFor="userCount">Kullanıcı sayısı:</label>
+              <input type="number" id="userCount" required max="500" />
+            </div>
+          </span>
           <button disabled={isLoading} type="submit">
             {isLoading ? "Loading..." : "Ekle"}
           </button>
