@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import QRCode from "qrcode";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
@@ -10,6 +10,10 @@ import deleteIcon from "../../../assets/delete.png";
 import axios from "axios";
 
 export default function Index({ setIsModal, isModal }) {
+  useEffect(() => {
+    console.log(isModal.row);
+  }, [isModal]);
+
   const downloadQrCodes = async () => {
     const zip = new JSZip();
     const imgFolder = zip.folder("qr_codes");
@@ -64,6 +68,7 @@ export default function Index({ setIsModal, isModal }) {
       <p>ID: {isModal.row._id}</p>
       <p>İşletme numarası: {isModal.row.buisnessNumber}</p>
       <p>İşletme sahibi: {isModal.row.owner}</p>
+      <p>Kullanıcı sayısı: {isModal.row.users.length}</p>
       <button onClick={() => downloadQrCodes()}>
         <img src={qrIcon} alt="qr icon" />
         Kullanıcıların QR giriş kodlarını indir

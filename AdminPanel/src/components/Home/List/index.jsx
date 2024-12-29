@@ -10,6 +10,7 @@ const columns = [
   { field: "buisnessName", headerName: "İşletme ismi", width: 130 },
   { field: "buisnessNumber", headerName: "İşletme numarası", width: 150 },
   { field: "owner", headerName: "İşletme sahibi", width: 130 },
+  { field: "userCount", headerName: "Kullanıcı sayısı", width: 150 },
 ];
 
 export default function DataTable() {
@@ -33,6 +34,7 @@ export default function DataTable() {
           const dataWithId = response.data.map((item, index) => ({
             ...item,
             id: item._id || index,
+            userCount: item.users.length,
           }));
           setRows(dataWithId);
         } else {
