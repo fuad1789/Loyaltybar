@@ -6,7 +6,8 @@ const socketHelper = require("../socketHelper");
 
 const addNewBuisness = async (req, res) => {
   try {
-    const { buisnessName, buisnessNumber, owner, adminId } = req.body;
+    const { buisnessName, buisnessNumber, owner, adminId, userCount } =
+      req.body;
     const user = await AdminSchema.findOne({ _id: adminId });
     if (!user) {
       return res.status(500).json({ msg: "Admin diğilsiniz" });
@@ -20,7 +21,7 @@ const addNewBuisness = async (req, res) => {
     });
     await newBuisness.save();
     const users = [];
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < userCount; i++) {
       const date = new Date();
       date.setHours(date.getHours() - 5);
       const newUser = new UserSchema({
