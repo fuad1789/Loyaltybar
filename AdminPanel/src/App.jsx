@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LoginForm from "./components/Login";
 import SerachBox from "./components/Home/SearchBox";
 import List from "./components/Home/List";
@@ -41,7 +41,7 @@ function App() {
 
   if (isLoggedIn) {
     return (
-      <Router>
+      <BrowserRouter>
         <div className="main">
           <SerachBox />
           <Routes>
@@ -49,7 +49,7 @@ function App() {
             <Route path="/business/:id" element={<BuisnessPopUp />} />
           </Routes>
         </div>
-      </Router>
+      </BrowserRouter>
     );
   }
 
