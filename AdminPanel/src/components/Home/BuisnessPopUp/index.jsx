@@ -1,4 +1,5 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import QRCode from "qrcode";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
@@ -9,15 +10,29 @@ import blockIcon from "../../../assets/block.png";
 import deleteIcon from "../../../assets/delete.png";
 import axios from "axios";
 
-export default function Index({ setIsModal, isModal }) {
+export default function BuisnessPopUp() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [business, setBusiness] = useState(null);
+
   useEffect(() => {
-    console.log(isModal.row);
-  }, [isModal]);
+    const fetchBusiness = async () => {
+      try {
+        const response = await axios.get(
+          `https://loyaltybar-bl4z.onrender.com/buisness/${id}`
+        );
+        setBusiness(response.data.buisness);
+      } catch (error) {
+        console.error("Error fetching business:", error);
+      }
+    };
+    fetchBusiness();
+  }, [id]);
 
   const downloadQrCodes = async () => {
     const zip = new JSZip();
     const imgFolder = zip.folder("qr_codes");
-    for (let user of isModal.row.users) {
+    for (let user of business.users) {
       const canvas = document.createElement("canvas");
       await QRCode.toCanvas(canvas, user.userId, {
         errorCorrectionLevel: "H",
@@ -29,14 +44,14 @@ export default function Index({ setIsModal, isModal }) {
       imgFolder.file(`${user.userId}.png`, base64, { base64: true });
     }
     zip.generateAsync({ type: "blob" }).then((content) => {
-      saveAs(content, `${isModal.row._id}.zip`);
+      saveAs(content, `${business._id}.zip`);
     });
   };
 
   const blockBuisness = async () => {
     await axios
       .post(`https://loyaltybar-bl4z.onrender.com/buisness/block`, {
-        buisnessId: isModal.row._id,
+        buisnessId: business._id,
       })
       .catch((res) => {
         console.log(res.data);
@@ -49,7 +64,7 @@ export default function Index({ setIsModal, isModal }) {
   const deleteBuisness = async () => {
     await axios
       .delete(`https://loyaltybar-bl4z.onrender.com/buisness/delete`, {
-        data: { buisnessId: isModal.row._id },
+        data: { buisnessId: business._id },
       })
       .catch((res) => {
         console.log(res.data);
@@ -59,26 +74,28 @@ export default function Index({ setIsModal, isModal }) {
       });
   };
 
+  if (!business) return <div>Loading...</div>;
+
   return (
     <div className="popup">
       <div className="back">
-        <img src={backIcon} alt="backicon" onClick={() => setIsModal(false)} />
+        <img src={backIcon} alt="backicon" onClick={() => navigate(-1)} />
       </div>
-      <h1>{isModal.row.buisnessName}</h1>
-      <p>ID: {isModal.row._id}</p>
-      <p>İşletme numarası: {isModal.row.buisnessNumber}</p>
-      <p>İşletme sahibi: {isModal.row.owner}</p>
-      <p>Kullanıcı sayısı: {isModal.row.users.length}</p>
+      <h1>{business.buisnessName}</h1>
+      <p>ID: {business._id}</p>
+      <p>İşletme numarası: {business.buisnessNumber}</p>
+      <p>İşletme sahibi: {business.owner}</p>
+      <p>Kullanıcı sayısı: {business.users.length}</p>
       <button onClick={() => downloadQrCodes()}>
         <img src={qrIcon} alt="qr icon" />
         Kullanıcıların QR giriş kodlarını indir
       </button>
       <button
         onClick={() => blockBuisness()}
-        style={{ backgroundColor: isModal.row.block ? "white" : "yellow" }}
+        style={{ backgroundColor: business.block ? "white" : "yellow" }}
       >
         <img src={blockIcon} alt="block icon" />
-        {isModal.row.block
+        {business.block
           ? "İşletmenin hesabının engelini kaldır"
           : "İşletmenin hesabını engelle"}
       </button>

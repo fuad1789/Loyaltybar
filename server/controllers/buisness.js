@@ -162,6 +162,27 @@ const updateUserShavedCount = async (req, res) => {
   }
 };
 
+const getBuisnessById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res
+        .status(400)
+        .json({ status: "Error", message: "Invalid business ID format" });
+    }
+    const buisness = await BuisnessSchema.findById(id).populate("users");
+    if (!buisness) {
+      return res.status(404).json({ msg: "İşletme bulunamadı" });
+    }
+    return res.status(200).json({ status: "OK", buisness });
+  } catch (error) {
+    console.error("Error fetching business by ID:", error);
+    return res
+      .status(500)
+      .json({ status: "Error", message: "Internal server error" });
+  }
+};
+
 module.exports = {
   getAllBuisness,
   addNewBuisness,
@@ -169,4 +190,5 @@ module.exports = {
   deleteBuisness,
   adminLogin,
   updateUserShavedCount,
+  getBuisnessById,
 };

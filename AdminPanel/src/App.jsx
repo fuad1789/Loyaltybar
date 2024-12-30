@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import LoginForm from "./components/Login";
 import SerachBox from "./components/Home/SearchBox";
 import List from "./components/Home/List";
+import BuisnessPopUp from "./components/Home/BuisnessPopUp";
 
 import "./App.css";
 import axios from "axios";
@@ -39,10 +41,15 @@ function App() {
 
   if (isLoggedIn) {
     return (
-      <div className="main">
-        <SerachBox />
-        <List />
-      </div>
+      <Router>
+        <div className="main">
+          <SerachBox />
+          <Routes>
+            <Route path="/" element={<List />} />
+            <Route path="/business/:id" element={<BuisnessPopUp />} />
+          </Routes>
+        </div>
+      </Router>
     );
   }
 

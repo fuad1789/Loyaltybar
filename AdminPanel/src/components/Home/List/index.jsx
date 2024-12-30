@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
 import axios from "axios";
-import BuisnessPopUp from "../BuisnessPopUp/index";
+import { useNavigate } from "react-router-dom";
 import "./index.css";
 
 const columns = [
@@ -16,8 +16,7 @@ const columns = [
 export default function DataTable() {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isModal, setIsModal] = useState(false);
-  const paginationModel = { page: 0, pageSize: 5 };
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBusinesses = async () => {
@@ -60,17 +59,15 @@ export default function DataTable() {
           rows={rows}
           columns={columns}
           loading={loading}
-          initialState={{ pagination: { paginationModel } }}
           getRowId={(row) => row.id}
           getRowClassName={getRowClassName}
           onRowClick={(e) => {
-            setIsModal(e);
+            navigate(`/business/${e.row.id}`);
           }}
           disableColumnFilter
           disableColumnMenu
         />
       </Paper>
-      {isModal && <BuisnessPopUp setIsModal={setIsModal} isModal={isModal} />}
     </div>
   );
 }
