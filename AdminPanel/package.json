@@ -6,7 +6,7 @@
   "proxy": "hhttps://loyaltybar-bl4z.onrender.com/",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "pnpm install --no-frozen-lockfile && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
