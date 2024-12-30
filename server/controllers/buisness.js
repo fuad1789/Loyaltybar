@@ -10,7 +10,7 @@ const addNewBuisness = async (req, res) => {
       req.body;
     const user = await AdminSchema.findOne({ _id: adminId });
     if (!user) {
-      return res.status(500).json({ msg: "Admin diğilsiniz" });
+      return res.status(500).json({ msg: "Sie sind kein Administrator" });
     }
     const newBuisness = new BuisnessSchema({
       buisnessName,
@@ -62,13 +62,13 @@ const blockBuisness = async (req, res) => {
     const { buisnessId } = req.body;
     const buisness = await BuisnessSchema.findById(buisnessId);
     if (!buisness) {
-      return res.status(404).json({ msg: "İşletme bulunamadı" });
+      return res.status(404).json({ msg: "Unternehmen nicht gefunden" });
     }
     buisness.block = !buisness.block;
     await buisness.save();
     return res
       .status(200)
-      .json({ status: "OK", message: "İşletme bloke edildi", buisness });
+      .json({ status: "OK", message: "Unternehmen wurde blockiert", buisness });
   } catch (error) {
     console.error("Error blocking business:", error);
     return res
@@ -82,13 +82,16 @@ const deleteBuisness = async (req, res) => {
     const { buisnessId } = req.body;
     const buisness = await BuisnessSchema.findById(buisnessId);
     if (!buisness) {
-      return res.status(404).json({ msg: "İşletme bulunamadı" });
+      return res.status(404).json({ msg: "Unternehmen nicht gefunden" });
     }
     await UserSchema.deleteMany({ buisnessId: buisnessId });
     await BuisnessSchema.findByIdAndDelete(buisnessId);
     return res
       .status(200)
-      .json({ status: "OK", message: "İşletme ve kullanıcılar silindi" });
+      .json({
+        status: "OK",
+        message: "Unternehmen und Benutzer wurden gelöscht",
+      });
   } catch (error) {
     console.error("Error deleting business:", error);
     return res
@@ -104,12 +107,15 @@ const adminLogin = async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(buisnessId)) {
       return res
         .status(400)
-        .json({ status: "Error", message: "Invalid buisness ID format" });
+        .json({
+          status: "Error",
+          message: "Ungültiges Unternehmens-ID-Format",
+        });
     }
 
     const buisness = await BuisnessSchema.findById(buisnessId);
     if (!buisness) {
-      return res.status(404).json({ msg: "İşletme bulunamadı" });
+      return res.status(404).json({ msg: "Unternehmen nicht gefunden" });
     }
     return res.status(200).json({ status: "OK", buisness });
   } catch (error) {
@@ -128,11 +134,11 @@ const updateUserShavedCount = async (req, res) => {
     const user = await UserSchema.findOne({ userId });
 
     if (!user) {
-      return res.status(400).json({ msg: "Kullanıcı bulunamadı" });
+      return res.status(400).json({ msg: "Benutzer nicht gefunden" });
     }
 
     if (buisness.block == true) {
-      return res.status(400).json({ msg: "Işletme engellendi" });
+      return res.status(400).json({ msg: "Unternehmen ist gesperrt" });
     }
 
     const hoursDifference =
@@ -140,7 +146,7 @@ const updateUserShavedCount = async (req, res) => {
 
     if (hoursDifference < 0.005) {
       return res.status(400).json({
-        msg: "5 saatten daha az bir süre geçtiği için yeni traş eklenemez",
+        msg: "Neue Rasur kann nicht hinzugefügt werden, da weniger als 5 Stunden vergangen sind",
       });
     }
 
@@ -168,11 +174,14 @@ const getBuisnessById = async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res
         .status(400)
-        .json({ status: "Error", message: "Invalid business ID format" });
+        .json({
+          status: "Error",
+          message: "Ungültiges Unternehmens-ID-Format",
+        });
     }
     const buisness = await BuisnessSchema.findById(id).populate("users");
     if (!buisness) {
-      return res.status(404).json({ msg: "İşletme bulunamadı" });
+      return res.status(404).json({ msg: "Unternehmen nicht gefunden" });
     }
     return res.status(200).json({ status: "OK", buisness });
   } catch (error) {
