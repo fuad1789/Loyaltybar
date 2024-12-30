@@ -14,6 +14,7 @@ export default function BuisnessPopUp() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [business, setBusiness] = useState(null);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   useEffect(() => {
     const fetchBusiness = async () => {
@@ -30,22 +31,32 @@ export default function BuisnessPopUp() {
   }, [id]);
 
   const downloadQrCodes = async () => {
-    const zip = new JSZip();
-    const imgFolder = zip.folder("qr_codes");
-    for (let user of business.users) {
-      const canvas = document.createElement("canvas");
-      await QRCode.toCanvas(canvas, user.userId, {
-        errorCorrectionLevel: "H",
-        margin: 2,
-        scale: 8,
-      });
-      const dataUrl = canvas.toDataURL("image/png");
-      const base64 = dataUrl.split(",")[1];
-      imgFolder.file(`${user.userId}.png`, base64, { base64: true });
-    }
-    zip.generateAsync({ type: "blob" }).then((content) => {
+    setIsDownloading(true);
+    try {
+      const zip = new JSZip();
+      const imgFolder = zip.folder("qr_codes");
+
+      await Promise.all(
+        business.users.map(async (user) => {
+          const canvas = document.createElement("canvas");
+          await QRCode.toCanvas(canvas, user.userId, {
+            errorCorrectionLevel: "H",
+            margin: 2,
+            scale: 8,
+          });
+          const dataUrl = canvas.toDataURL("image/png");
+          const base64 = dataUrl.split(",")[1];
+          imgFolder.file(`${user.userId}.png`, base64, { base64: true });
+        })
+      );
+
+      const content = await zip.generateAsync({ type: "blob" });
       saveAs(content, `${business._id}.zip`);
-    });
+    } catch (error) {
+      console.error("QR kodları indirilirken hata oluştu:", error);
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   const blockBuisness = async () => {
@@ -86,9 +97,19 @@ export default function BuisnessPopUp() {
       <p>İşletme numarası: {business.buisnessNumber}</p>
       <p>İşletme sahibi: {business.owner}</p>
       <p>Kullanıcı sayısı: {business.users.length}</p>
-      <button onClick={() => downloadQrCodes()}>
-        <img src={qrIcon} alt="qr icon" />
-        Kullanıcıların QR giriş kodlarını indir
+      <button
+        onClick={downloadQrCodes}
+        disabled={isDownloading}
+        className={isDownloading ? "loading-button" : ""}
+      >
+        {isDownloading ? (
+          <div className="loading-spinner"></div>
+        ) : (
+          <img src={qrIcon} alt="qr icon" />
+        )}
+        {isDownloading
+          ? "QR Kodları İndiriliyor..."
+          : "Kullanıcıların QR giriş kodlarını indir"}
       </button>
       <button
         onClick={() => blockBuisness()}
