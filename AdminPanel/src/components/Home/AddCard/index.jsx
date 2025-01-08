@@ -31,13 +31,13 @@ export default function Index({ isFormOpen, setIsFormOpen }) {
     };
 
     axios
-      .post(`https://loyaltybar-bl4z.onrender.com/buisness/addnew`, {
+      .post(`${import.meta.env.VITE_API_URL}buisness/addnew`, {
         ...data,
         adminId: localStorage.getItem("isLoggedIn"),
       })
       .then((response) => {
         console.log(response.data);
-        setIsFormOpen(false); // Formu kapat
+        setIsFormOpen(false);
       })
       .catch((error) => {
         console.error("Error:", error);

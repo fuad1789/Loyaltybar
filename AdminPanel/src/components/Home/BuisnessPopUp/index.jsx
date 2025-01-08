@@ -15,12 +15,13 @@ export default function BuisnessPopUp() {
   const navigate = useNavigate();
   const [business, setBusiness] = useState(null);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isBlocking, setIsBlocking] = useState(false);
 
   useEffect(() => {
     const fetchBusiness = async () => {
       try {
         const response = await axios.get(
-          `https://loyaltybar-bl4z.onrender.com/buisness/${id}`
+          `${import.meta.env.VITE_API_URL}buisness/${id}`
         );
         setBusiness(response.data.buisness);
       } catch (error) {
@@ -60,21 +61,28 @@ export default function BuisnessPopUp() {
   };
 
   const blockBuisness = async () => {
-    await axios
-      .post(`https://loyaltybar-bl4z.onrender.com/buisness/block`, {
+    setIsBlocking(true);
+    try {
+      await axios.post(`${import.meta.env.VITE_API_URL}buisness/block`, {
         buisnessId: business._id,
-      })
-      .catch((res) => {
-        console.log(res.data);
-      })
-      .finally(() => {
-        window.location.reload();
       });
+
+      await new Promise((resolve) => setTimeout(resolve, 4000));
+
+      setBusiness((prev) => ({
+        ...prev,
+        block: !prev.block,
+      }));
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsBlocking(false);
+    }
   };
 
   const deleteBuisness = async () => {
     await axios
-      .delete(`https://loyaltybar-bl4z.onrender.com/buisness/delete`, {
+      .delete(`${import.meta.env.VITE_API_URL}buisness/delete`, {
         data: { buisnessId: business._id },
       })
       .catch((res) => {
@@ -114,9 +122,19 @@ export default function BuisnessPopUp() {
       <button
         onClick={() => blockBuisness()}
         style={{ backgroundColor: business.block ? "white" : "yellow" }}
+        disabled={isBlocking}
+        className={isBlocking ? "loading-button" : ""}
       >
-        <img src={blockIcon} alt="block icon" />
-        {business.block
+        {isBlocking ? (
+          <div className="loading-spinner"></div>
+        ) : (
+          <img src={blockIcon} alt="block icon" />
+        )}
+        {isBlocking
+          ? business.block
+            ? "Engel Kaldırılıyor..."
+            : "Engelleniyor..."
+          : business.block
           ? "İşletmenin hesabının engelini kaldır"
           : "İşletmenin hesabını engelle"}
       </button>
