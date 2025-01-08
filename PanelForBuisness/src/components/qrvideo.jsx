@@ -6,6 +6,7 @@ import cancelAnimation from "../assets/cancel.json";
 import Confetti from "react-confetti";
 import QrScanner from "qr-scanner";
 import axios from "axios";
+import { io } from "socket.io-client";
 import Biyik from "../assets/biyik";
 import Completed from "../assets/coplated";
 
