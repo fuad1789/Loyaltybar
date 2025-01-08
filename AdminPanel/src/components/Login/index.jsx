@@ -12,10 +12,13 @@ function LoginForm({ onLogin }) {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post("http://localhost:3000/admin/login", {
-        email,
-        password,
-      });
+      const response = await axios.post(
+        "https://loyaltybar-bl4z.onrender.com/admin/login",
+        {
+          email,
+          password,
+        }
+      );
       setMessage(response.data.status);
       if (response.data.status === "OK") {
         onLogin(response.data.user._id);

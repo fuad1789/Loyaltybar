@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "proxy": "hhttp://localhost:3000/",
+  "proxy": "hhttps://loyaltybar-bl4z.onrender.com/",
   "scripts": {
     "dev": "vite",
     "build": "pnpm install --no-frozen-lockfile && vite build",
