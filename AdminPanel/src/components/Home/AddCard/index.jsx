@@ -31,7 +31,7 @@ export default function Index({ isFormOpen, setIsFormOpen }) {
     };
 
     axios
-      .post(`${import.meta.env.VITE_API_URL}buisness/addnew`, {
+      .post(`${import.meta.env.VITE_API_URL}/buisness/addnew`, {
         ...data,
         adminId: localStorage.getItem("isLoggedIn"),
       })

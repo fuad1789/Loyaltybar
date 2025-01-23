@@ -22,7 +22,7 @@ export default function BuisnessPopUp() {
     const fetchBusiness = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}buisness/${id}`
+          `${import.meta.env.VITE_API_URL}/buisness/${id}`
         );
         setBusiness(response.data.buisness);
       } catch (error) {
@@ -64,7 +64,7 @@ export default function BuisnessPopUp() {
   const blockBuisness = async () => {
     setIsBlocking(true);
     try {
-      await axios.post(`${import.meta.env.VITE_API_URL}buisness/block`, {
+      await axios.post(`${import.meta.env.VITE_API_URL}/buisness/block`, {
         buisnessId: business._id,
       });
 
@@ -84,7 +84,7 @@ export default function BuisnessPopUp() {
   const deleteBuisness = async () => {
     setIsDeleting(true);
     await axios
-      .delete(`${import.meta.env.VITE_API_URL}buisness/delete`, {
+      .delete(`${import.meta.env.VITE_API_URL}/buisness/delete`, {
         data: { buisnessId: business._id },
       })
       .catch((res) => {

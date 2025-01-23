@@ -23,7 +23,7 @@ export default function DataTable() {
       try {
         const response = await axios({
           method: "get",
-          url: `${import.meta.env.VITE_API_URL}buisness/getall`,
+          url: `${import.meta.env.VITE_API_URL}/buisness/getall`,
           headers: {
             "ngrok-skip-browser-warning": "true",
             "Content-Type": "application/json",

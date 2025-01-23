@@ -14,7 +14,7 @@ function App() {
   useEffect(() => {
     const islog = async () => {
       await axios
-        .post(`${import.meta.env.VITE_API_URL}admin/token`, {
+        .post(`${import.meta.env.VITE_API_URL}/admin/token`, {
           id: localStorage.getItem("isLoggedIn"),
         })
         .then((res) => {
