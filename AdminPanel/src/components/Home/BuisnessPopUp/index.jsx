@@ -16,6 +16,7 @@ export default function BuisnessPopUp() {
   const [business, setBusiness] = useState(null);
   const [isDownloading, setIsDownloading] = useState(false);
   const [isBlocking, setIsBlocking] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     const fetchBusiness = async () => {
@@ -81,6 +82,7 @@ export default function BuisnessPopUp() {
   };
 
   const deleteBuisness = async () => {
+    setIsDeleting(true);
     await axios
       .delete(`${import.meta.env.VITE_API_URL}buisness/delete`, {
         data: { buisnessId: business._id },
@@ -89,7 +91,16 @@ export default function BuisnessPopUp() {
         console.log(res.data);
       })
       .finally(() => {
-        window.location.reload();
+        setIsDeleting(false);
+        const currentUrl = window.location.href;
+
+        // URL'yi ana dizine yönlendir
+        const mainUrl = currentUrl.split("/").slice(0, 3).join("/");
+
+        // Ana sayfaya yönlendir
+        if (currentUrl !== mainUrl) {
+          window.location.href = mainUrl;
+        }
       });
   };
 
@@ -141,9 +152,18 @@ export default function BuisnessPopUp() {
       <button
         onClick={() => deleteBuisness()}
         style={{ backgroundColor: "red" }}
+        disabled={isDeleting}
       >
-        <img src={deleteIcon} alt="delete icon" />
-        İşletmenin hesabını sil
+        {isDeleting ? (
+          <>
+            <div className="loading-spinner"></div>
+          </>
+        ) : (
+          <>
+            <img src={deleteIcon} alt="delete icon" />
+            İşletmenin hesabını sil
+          </>
+        )}
       </button>
     </div>
   );
