@@ -17,9 +17,16 @@ const io = socketHelper.init(server);
 
 app.use(
   cors({
-    origin: "*",
+    origin: [
+      "exp://",
+      "http://localhost",
+      "https://loyaltybar-bl4z.onrender.com",
+      "*",
+    ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+    exposedHeaders: ["Content-Length", "X-Foo", "X-Bar"],
   })
 );
 app.use(bodyParser.json());

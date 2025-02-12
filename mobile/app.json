@@ -1,0 +1,65 @@
+{
+  "expo": {
+    "name": "mobile12",
+    "slug": "mobile12",
+    "version": "1.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.fuad12.mobile"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
+          "recordAudioAndroid": true
+        }
+      ],
+      [
+        "expo-barcode-scanner",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera for QR scanning"
+        }
+      ],
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/font/PlusJakartaSans-SemiBold.ttf",
+            "./assets/font/PortLligatSlab-Regular.ttf",
+            "./assets/font/PoetsenOne-Regular.ttf"
+          ]
+        }
+      ]
+    ],
+    "newArchEnabled": true,
+    "owner": "fuad1212",
+    "extra": {
+      "eas": {
+        "projectId": "e6f3be60-3fc5-42f0-9e36-1ecdb125b754"
+      }
+    }
+  }
+}
