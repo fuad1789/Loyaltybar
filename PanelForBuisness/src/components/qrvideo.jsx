@@ -71,7 +71,7 @@ function QrVideo() {
     console.log(`QR-Code erkannt: ${result.data}`);
     setIsScanning(false);
 
-    axios
+    await axios
       .post(
         "https://loyaltybar-bl4z.onrender.com/buisness/updateUserShavedCount",
         {
@@ -80,7 +80,7 @@ function QrVideo() {
           buisnessId: localStorage.getItem("isLoggedIn").toString(),
         }
       )
-      .then((response) => {
+      .then( (response) => {
         if (response.data.status === "OK") {
           console.log(response.data.user.shavedCount);
           setShavedCount(10 - response.data.user.shavedCount);
@@ -105,7 +105,7 @@ function QrVideo() {
         setShowCancel(true);
       });
 
-    setTimeout(() => {
+    await setTimeout(() => {
       setShowSuccess(false);
       setShowCancel(false);
       setShowConfetti(false);
