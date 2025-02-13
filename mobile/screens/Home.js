@@ -13,33 +13,61 @@ import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import QRCode from "react-native-qrcode-svg";
 import axios from "axios";
-import io from "socket.io-client";
 import { Audio } from "expo-av";
 import homeBg from "../assets/HomeBg.jpg";
 import biy from "../assets/moustache.png";
 import doneimg from "../assets/doneimg.png";
 import * as SplashScreen from "expo-splash-screen";
 import { useFonts } from "expo-font";
+import NetInfo from "@react-native-community/netinfo";
 
 const API_URL = "https://loyaltybar-bl4z.onrender.com";
 
-// Add a debug logging function
-const debug = (message, data = null) => {
-  const log = `[BerberApp] ${message}`;
-  if (__DEV__) {
-    if (data) {
-      console.log(log, data);
-    } else {
-      console.log(log);
+// Create an axios instance with default config
+const api = axios.create({
+  baseURL: API_URL,
+  timeout: 15000,
+  headers: {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  },
+});
+
+// Add request interceptor for better error handling
+api.interceptors.request.use(async (config) => {
+  const netInfo = await NetInfo.fetch();
+  if (!netInfo.isConnected) {
+    return Promise.reject(new Error("İnternet bağlantısı yok"));
+  }
+  return config;
+});
+
+// Add response interceptor for better error handling
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.code === "ECONNABORTED") {
+      return Promise.reject(new Error("Bağlantı zaman aşımına uğradı"));
     }
+    if (!error.response) {
+      return Promise.reject(new Error("Sunucuya bağlanılamadı"));
+    }
+    return Promise.reject(error);
+  }
+);
+
+// Enhanced debug logging function that works in both dev and production
+const debug = (message, data = null) => {
+  const timestamp = new Date().toISOString();
+  const log = `[BerberApp ${timestamp}] ${message}`;
+
+  if (__DEV__ || message.toLowerCase().includes("error")) {
+    console.log("----------------------------------------");
+    console.log(log);
+    if (data) console.log("Data:", JSON.stringify(data, null, 2));
+    console.log("----------------------------------------");
   }
 };
-
-const socket = io(API_URL, {
-  reconnection: true,
-  reconnectionAttempts: 5,
-  timeout: 10000,
-});
 
 const Home = () => {
   const [userId, setUserId] = useState(null);
@@ -49,6 +77,11 @@ const Home = () => {
   const [isCooldown, setIsCooldown] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isConnected, setIsConnected] = useState(true);
+  const [connectionAttempts, setConnectionAttempts] = useState(0);
+  const [initializing, setInitializing] = useState(true);
+  const MAX_CONNECTION_RETRIES = 3;
+  const retryTimeoutRef = useRef(null);
 
   const [loaded, fontError] = useFonts({
     PoetsenOne: require("../assets/font/PoetsenOne-Regular.ttf"),
@@ -56,57 +89,93 @@ const Home = () => {
   });
 
   const fetchShawedCount = async (id) => {
-    debug("Fetching shawed count for user:", id);
+    debug("Fetching shawed count - START", { userId: id });
     try {
-      const response = await axios.post(
-        `${API_URL}/user/getShawedCount`,
-        { userId: id },
-        { timeout: 10000 }
-      );
-      debug("Received shawed count response:", response.data);
+      const response = await api.post("/user/getShawedCount", { userId: id });
+
+      if (!response.data || typeof response.data.shwedCount !== "number") {
+        throw new Error("Geçersiz sunucu yanıtı");
+      }
+
+      debug("Shawed count fetch - SUCCESS", {
+        userId: id,
+        count: response.data.shwedCount,
+      });
       setShawedCount(response.data.shwedCount);
       setError(null);
+      setConnectionAttempts(0);
+      setInitializing(false);
     } catch (err) {
-      debug("Error in fetchShawedCount:", {
-        code: err.code,
-        message: err.message,
-        response: err.response?.data,
-        status: err.response?.status,
+      debug("Shawed count fetch - ERROR", {
+        userId: id,
+        error: err.message,
       });
-      let errorMessage = "Veri yüklenirken bir hata oluştu.";
-      if (err.code === "ECONNABORTED") {
-        errorMessage = "Bağlantı zaman aşımına uğradı. Lütfen tekrar deneyin.";
-      } else if (err.response) {
-        errorMessage = err.response.data.msg || "Sunucu hatası oluştu.";
-      } else if (err.request) {
-        errorMessage =
-          "Sunucuya bağlanılamadı. İnternet bağlantınızı kontrol edin.";
+
+      // Clear any existing retry timeout
+      if (retryTimeoutRef.current) {
+        clearTimeout(retryTimeoutRef.current);
       }
-      setError(errorMessage);
+
+      if (connectionAttempts < MAX_CONNECTION_RETRIES) {
+        setConnectionAttempts((prev) => prev + 1);
+        retryTimeoutRef.current = setTimeout(() => {
+          fetchShawedCount(id);
+        }, 2000);
+      } else {
+        setError(err.message || "Sunucuya bağlanamadı. Lütfen tekrar deneyin.");
+        setInitializing(false);
+      }
+    }
+  };
+
+  // Clean up function to clear timeouts
+  const cleanup = () => {
+    if (retryTimeoutRef.current) {
+      clearTimeout(retryTimeoutRef.current);
     }
   };
 
   useEffect(() => {
+    return cleanup;
+  }, []);
+
+  useEffect(() => {
     if (loaded || fontError) {
-      debug("Fonts loaded:", { loaded, fontError });
-      SplashScreen.hideAsync();
+      debug("Font loading status", {
+        loaded,
+        fontError: fontError ? fontError.toString() : null,
+      });
+      SplashScreen.hideAsync().catch((err) =>
+        debug("Error hiding splash screen", { error: err.message })
+      );
     }
 
     const initializeApp = async () => {
-      debug("Initializing app");
+      debug("App initialization - START");
       try {
+        const netInfo = await NetInfo.fetch();
+        if (!netInfo.isConnected) {
+          throw new Error("İnternet bağlantınızı kontrol edin");
+        }
+
         const storedUserId = await AsyncStorage.getItem("userId");
-        debug("Retrieved stored userId:", storedUserId);
+        debug("User ID retrieval - SUCCESS", { storedUserId });
         if (storedUserId) {
           setUserId(storedUserId);
           await fetchShawedCount(storedUserId);
+        } else {
+          debug("No stored userId found");
+          setError("Kullanıcı bilgisi bulunamadı.");
         }
       } catch (err) {
-        debug("Error in initializeApp:", err);
-        console.error("Error initializing app:", err);
-        setError("Uygulama başlatılırken bir hata oluştu.");
+        debug("App initialization - ERROR", {
+          errorMessage: err.message,
+          stack: err.stack,
+        });
+        setError(err.message || "Uygulama başlatılırken bir hata oluştu.");
       } finally {
         setIsLoading(false);
+        setInitializing(false);
       }
     };
 
@@ -125,34 +194,24 @@ const Home = () => {
     setShawedList(list);
   }, [shawedCount]);
 
+  // Network connectivity monitoring
   useEffect(() => {
-    if (userId) {
-      debug("Setting up socket listeners for userId:", userId);
-
-      socket.on("connect", () => {
-        debug("Socket connected");
-      });
-
-      socket.on("connect_error", (err) => {
-        debug("Socket connection error:", err);
-        console.error("Socket connection error:", err);
-      });
-
-      socket.on("qrScanned", async (scannedUserId) => {
-        debug("QR scanned event received:", scannedUserId);
-        if (scannedUserId === userId) {
-          await fetchShawedCount(scannedUserId);
-          playSound();
+    let isFirstConnect = true;
+    const unsubscribe = NetInfo.addEventListener((state) => {
+      setIsConnected(state.isConnected);
+      if (state.isConnected) {
+        if (!isFirstConnect && userId) {
+          // Don't retry on first connection, only on reconnection
+          handleRetry();
         }
-      });
+        isFirstConnect = false;
+      }
+    });
 
-      return () => {
-        debug("Cleaning up socket listeners");
-        socket.off("connect");
-        socket.off("qrScanned");
-        socket.off("connect_error");
-      };
-    }
+    return () => {
+      unsubscribe();
+      cleanup();
+    };
   }, [userId]);
 
   const playSound = async () => {
@@ -166,30 +225,46 @@ const Home = () => {
           setIsCooldown(false);
         }, 10000);
       } catch (error) {
-        console.error("Error playing sound:", error);
+        debug("Sound playback error", {
+          errorMessage: error.message,
+          stack: error.stack,
+        });
       }
     }
   };
 
   const handleRetry = () => {
+    debug("Retry attempt initiated", { userId });
     setIsLoading(true);
     setError(null);
+    setConnectionAttempts(0);
     if (userId) {
-      fetchShawedCount(userId);
+      fetchShawedCount(userId).finally(() => {
+        setIsLoading(false);
+        debug("Retry attempt completed", { userId });
+      });
+    } else {
+      setIsLoading(false);
+      debug("Retry failed - No userId found");
     }
-    setIsLoading(false);
   };
 
   if (!loaded && !fontError) {
-    return null;
-  }
-
-  if (isLoading) {
     return (
       <ImageBackground source={homeBg} style={styles.container}>
         <ExpoStatusBar />
         <ActivityIndicator size="large" color="#76c7c0" />
         <Text style={styles.loadingText}>Yükleniyor...</Text>
+      </ImageBackground>
+    );
+  }
+
+  if (initializing) {
+    return (
+      <ImageBackground source={homeBg} style={styles.container}>
+        <ExpoStatusBar />
+        <ActivityIndicator size="large" color="#76c7c0" />
+        <Text style={styles.loadingText}>Bağlantı kuruluyor...</Text>
       </ImageBackground>
     );
   }
@@ -200,6 +275,23 @@ const Home = () => {
         <ExpoStatusBar />
         <Text style={styles.errorText}>{error}</Text>
         <TouchableOpacity style={styles.retryButton} onPress={handleRetry}>
+          <Text style={styles.retryButtonText}>Tekrar Dene</Text>
+        </TouchableOpacity>
+      </ImageBackground>
+    );
+  }
+
+  if (!isConnected) {
+    return (
+      <ImageBackground source={homeBg} style={styles.container}>
+        <ExpoStatusBar />
+        <Text style={styles.errorText}>İnternet bağlantınızı kontrol edin</Text>
+        <TouchableOpacity
+          style={styles.retryButton}
+          onPress={() =>
+            NetInfo.fetch().then((state) => setIsConnected(state.isConnected))
+          }
+        >
           <Text style={styles.retryButtonText}>Tekrar Dene</Text>
         </TouchableOpacity>
       </ImageBackground>

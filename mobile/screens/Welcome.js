@@ -54,8 +54,7 @@ const Welcome = ({ setIsLoggedIn }) => {
         </View>
         <View style={styles.bottom}>
           <Text style={styles.startTex}>
-            Her tıraşınızda bir adım daha yaklaşın QR kodunuzu okutun ve 10
-            tıraş sonunda indirim fırsatlarını yakalayın!
+            salam
           </Text>
           <TouchableOpacity
             onPress={() => {
