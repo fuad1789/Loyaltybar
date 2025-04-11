@@ -33,13 +33,15 @@ function LoginForm({ onLogin }) {
   return (
     <div className="background">
       <form className="container" onSubmit={handleSubmit}>
+        <h2>Admin Panel</h2>
         <div>
-          <label htmlFor="mail">E-mail adresiniz:</label>
+          <label htmlFor="mail">E-mail</label>
           <input
             type="email"
             id="mail"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            placeholder="E-mail adresinizi girin"
             required
           />
         </div>
@@ -50,11 +52,19 @@ function LoginForm({ onLogin }) {
             id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            placeholder="Şifrenizi girin"
             required
           />
         </div>
         <button type="submit" disabled={loading || !email || !password}>
-          {loading ? "Loading..." : "Giriş"}
+          {loading ? (
+            <>
+              <div className="loading-spinner"></div>
+              Giriş Yapılıyor...
+            </>
+          ) : (
+            "Giriş Yap"
+          )}
         </button>
         {message && <p>{message}</p>}
       </form>

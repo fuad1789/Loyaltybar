@@ -17,9 +17,11 @@ export default function BuisnessPopUp() {
   const [isDownloading, setIsDownloading] = useState(false);
   const [isBlocking, setIsBlocking] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchBusiness = async () => {
+      setIsLoading(true);
       try {
         const response = await axios.get(
           `${import.meta.env.VITE_API_URL}/buisness/${id}`
@@ -27,6 +29,8 @@ export default function BuisnessPopUp() {
         setBusiness(response.data.buisness);
       } catch (error) {
         console.error("Error fetching business:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchBusiness();
@@ -93,23 +97,33 @@ export default function BuisnessPopUp() {
       .finally(() => {
         setIsDeleting(false);
         const currentUrl = window.location.href;
-
-        // URL'yi ana dizine yönlendir
         const mainUrl = currentUrl.split("/").slice(0, 3).join("/");
-
-        // Ana sayfaya yönlendir
         if (currentUrl !== mainUrl) {
           window.location.href = mainUrl;
         }
       });
   };
 
-  if (!business) return <div>Loading...</div>;
+  if (isLoading) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>İşletme bilgileri yükleniyor...</p>
+      </div>
+    );
+  }
+
+  if (!business)
+    return (
+      <div className="loading-container">
+        <p>İşletme bulunamadı.</p>
+      </div>
+    );
 
   return (
     <div className="popup">
       <div className="back">
-        <img src={backIcon} alt="backicon" onClick={() => navigate(-1)} />
+        <img src={backIcon} alt="Geri" onClick={() => navigate(-1)} />
       </div>
       <h1>{business.buisnessName}</h1>
       <p>ID: {business._id}</p>
@@ -124,46 +138,44 @@ export default function BuisnessPopUp() {
         {isDownloading ? (
           <div className="loading-spinner"></div>
         ) : (
-          <img src={qrIcon} alt="qr icon" />
+          <img src={qrIcon} alt="QR" />
         )}
         {isDownloading
           ? "QR Kodları İndiriliyor..."
-          : "Kullanıcıların QR giriş kodlarını indir"}
+          : "Kullanıcıların QR Giriş Kodlarını İndir"}
       </button>
       <button
-        onClick={() => blockBuisness()}
-        style={{ backgroundColor: business.block ? "white" : "yellow" }}
+        onClick={blockBuisness}
+        style={{
+          backgroundColor: business.block ? "white" : "var(--warning-color)",
+        }}
         disabled={isBlocking}
         className={isBlocking ? "loading-button" : ""}
       >
         {isBlocking ? (
           <div className="loading-spinner"></div>
         ) : (
-          <img src={blockIcon} alt="block icon" />
+          <img src={blockIcon} alt="Engelle" />
         )}
         {isBlocking
           ? business.block
             ? "Engel Kaldırılıyor..."
             : "Engelleniyor..."
           : business.block
-          ? "İşletmenin hesabının engelini kaldır"
-          : "İşletmenin hesabını engelle"}
+          ? "İşletmenin Hesabının Engelini Kaldır"
+          : "İşletmenin Hesabını Engelle"}
       </button>
       <button
-        onClick={() => deleteBuisness()}
-        style={{ backgroundColor: "red" }}
+        onClick={deleteBuisness}
+        style={{ backgroundColor: "var(--danger-color)" }}
         disabled={isDeleting}
       >
         {isDeleting ? (
-          <>
-            <div className="loading-spinner"></div>
-          </>
+          <div className="loading-spinner"></div>
         ) : (
-          <>
-            <img src={deleteIcon} alt="delete icon" />
-            İşletmenin hesabını sil
-          </>
+          <img src={deleteIcon} alt="Sil" />
         )}
+        {isDeleting ? "Siliniyor..." : "İşletmenin Hesabını Sil"}
       </button>
     </div>
   );

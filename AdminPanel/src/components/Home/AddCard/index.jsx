@@ -4,7 +4,6 @@ import "./index.css";
 
 export default function Index({ isFormOpen, setIsFormOpen }) {
   const formRef = useRef(null);
-
   const [isLoading, setIsLoading] = useState(false);
 
   const handleOutsideClick = (e) => {
@@ -38,53 +37,70 @@ export default function Index({ isFormOpen, setIsFormOpen }) {
       .then((response) => {
         console.log(response.data);
         setIsFormOpen(false);
+        window.location.reload();
       })
       .catch((error) => {
         console.error("Error:", error);
+        window.location.reload();
       })
       .finally(() => {
         setIsLoading(false);
-        window.location.reload();
       });
   };
 
-  const newLocal = "Loading";
   return (
     <>
       {isFormOpen && (
-        <form
-          className="container addBox"
-          ref={formRef}
-          onSubmit={handleSubmit}
-        >
-          <p>İşletme ekle</p>
+        <form className="addBox" ref={formRef} onSubmit={handleSubmit}>
+          <p>İşletme Ekle</p>
           <div>
-            <label htmlFor="isim">İşletme isimi:</label>
-            <input type="text" id="isim" required />
+            <label htmlFor="isim">İşletme İsmi</label>
+            <input
+              type="text"
+              id="isim"
+              placeholder="İşletme ismini girin"
+              required
+            />
           </div>
           <div>
-            <label htmlFor="tel">İşletme telefon numarası:</label>
-            <input type="text" id="tel" required />
+            <label htmlFor="tel">İşletme Telefon Numarası</label>
+            <input
+              type="text"
+              id="tel"
+              placeholder="Telefon numarasını girin"
+              required
+            />
           </div>
-          <span
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              width: "85%",
-              gap: "10px",
-            }}
-          >
-            <div style={{ width: "70%" }}>
-              <label htmlFor="owner">İşletme sahibi:</label>
-              <input type="text" id="owner" required />
+          <div style={{ display: "flex", flexDirection: "row", gap: "1rem" }}>
+            <div>
+              <label htmlFor="owner">İşletme Sahibi</label>
+              <input
+                type="text"
+                id="owner"
+                placeholder="İşletme sahibinin adını girin"
+                required
+              />
             </div>
-            <div style={{ width: "30%" }}>
-              <label htmlFor="userCount">Kullanıcı sayısı:</label>
-              <input type="number" id="userCount" required max="500" />
+            <div>
+              <label htmlFor="userCount">Kullanıcı Sayısı</label>
+              <input
+                type="number"
+                id="userCount"
+                placeholder="Sayı"
+                required
+                max="500"
+              />
             </div>
-          </span>
+          </div>
           <button disabled={isLoading} type="submit">
-            {isLoading ? "Loading..." : "Ekle"}
+            {isLoading ? (
+              <>
+                <div className="loading-spinner"></div>
+                Ekleniyor...
+              </>
+            ) : (
+              "Ekle"
+            )}
           </button>
         </form>
       )}

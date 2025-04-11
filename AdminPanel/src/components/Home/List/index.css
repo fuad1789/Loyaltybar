@@ -1,19 +1,42 @@
 .list {
   width: 100%;
-  height: calc(100vh - 150px);
-  display: flex;
-  align-items: center;
-  background-color: aqua;
+  height: calc(100vh - 120px);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--box-shadow);
+}
+
+.MuiDataGrid-root {
+  border: none !important;
+  background-color: white;
+}
+
+.MuiDataGrid-columnHeaders {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
+.MuiDataGrid-columnHeaderTitle {
+  font-weight: 600 !important;
+  color: var(--text-primary);
+}
+
+.MuiDataGrid-cell {
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
+.MuiDataGrid-row {
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.MuiDataGrid-row:hover {
+  background-color: rgba(67, 97, 238, 0.04) !important;
 }
 
 .blocked-row {
-  background-color: rgb(251, 251, 35);
+  background-color: rgba(230, 57, 70, 0.1);
 }
-.blocked-row:hover {
-  background-color: yellow;
-
-}
-
 
 @media screen and (max-width: 500px) {
   .list {

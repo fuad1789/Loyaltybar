@@ -6,11 +6,11 @@ import { useNavigate } from "react-router-dom";
 import "./index.css";
 
 const columns = [
-  { field: "id", headerName: "ID", width: 70 },
-  { field: "buisnessName", headerName: "İşletme ismi", width: 130 },
-  { field: "buisnessNumber", headerName: "İşletme numarası", width: 150 },
-  { field: "owner", headerName: "İşletme sahibi", width: 130 },
-  { field: "userCount", headerName: "Kullanıcı sayısı", width: 150 },
+  { field: "id", headerName: "ID", width: 220 },
+  { field: "buisnessName", headerName: "İşletme İsmi", width: 200 },
+  { field: "buisnessNumber", headerName: "İşletme Numarası", width: 180 },
+  { field: "owner", headerName: "İşletme Sahibi", width: 180 },
+  { field: "userCount", headerName: "Kullanıcı Sayısı", width: 150 },
 ];
 
 export default function DataTable() {
@@ -53,7 +53,14 @@ export default function DataTable() {
 
   return (
     <div className="list">
-      <Paper sx={{ height: "100%", width: "100%" }}>
+      <Paper
+        sx={{
+          height: "100%",
+          width: "100%",
+          borderRadius: "8px",
+          overflow: "hidden",
+        }}
+      >
         <DataGrid
           rows={rows}
           columns={columns}
@@ -65,6 +72,14 @@ export default function DataTable() {
           }}
           disableColumnFilter
           disableColumnMenu
+          sx={{
+            "& .MuiDataGrid-cell:focus": {
+              outline: "none",
+            },
+            "& .MuiDataGrid-row:hover": {
+              backgroundColor: "rgba(67, 97, 238, 0.04)",
+            },
+          }}
         />
       </Paper>
     </div>

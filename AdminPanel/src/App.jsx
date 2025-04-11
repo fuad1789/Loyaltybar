@@ -10,27 +10,30 @@ import axios from "axios";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const islog = async () => {
-      await axios
-        .post(`${import.meta.env.VITE_API_URL}/admin/token`, {
-          id: localStorage.getItem("isLoggedIn"),
-        })
-        .then((res) => {
-          console.log(res.data);
-          if (res.data.status === "OK") {
-            setIsLoggedIn(true);
-          } else {
-            setIsLoggedIn(false);
+      setIsLoading(true);
+      try {
+        const response = await axios.post(
+          `${import.meta.env.VITE_API_URL}/admin/token`,
+          {
+            id: localStorage.getItem("isLoggedIn"),
           }
-        })
-        .catch((err) => {
-          console.log(err);
+        );
+        if (response.data.status === "OK") {
+          setIsLoggedIn(true);
+        } else {
           setIsLoggedIn(false);
-        });
+        }
+      } catch (err) {
+        console.log(err);
+        setIsLoggedIn(false);
+      } finally {
+        setIsLoading(false);
+      }
     };
-    console.log("islog", isLoggedIn);
 
     islog();
   }, []);
@@ -38,6 +41,15 @@ function App() {
   const handleLogin = (e) => {
     localStorage.setItem("isLoggedIn", e);
   };
+
+  if (isLoading) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Yükleniyor...</p>
+      </div>
+    );
+  }
 
   if (isLoggedIn) {
     return (

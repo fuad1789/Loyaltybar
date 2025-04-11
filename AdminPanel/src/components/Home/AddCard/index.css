@@ -20,19 +20,92 @@
 }
 
 .addBox {
-  position: absolute;
-  left: 50%;
+  position: fixed;
   top: 50%;
+  left: 50%;
   transform: translate(-50%, -50%);
-  -webkit-box-shadow: 0px 0px 50px -27px rgba(0, 0, 0, 0.75);
-  
-  -moz-box-shadow: 0px 0px 50px -27px rgba(0, 0, 0, 0.75);
-  box-shadow: 0px 0px 50px -27px rgba(0, 0, 0, 0.75);
+  width: 500px;
+  max-width: 90%;
+  background-color: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 2rem;
+  gap: 1.5rem;
+  z-index: 1000;
 }
+
 .addBox p {
-  color: #000;
-  font-size: 25px;
-  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.addBox div {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.addBox label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.addBox input {
+  border: 1px solid var(--border-color);
+  font-size: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--border-radius);
+  width: 100%;
+  transition: var(--transition);
+}
+
+.addBox input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+  outline: none;
+}
+
+.addBox button {
+  border: none;
+  font-size: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--border-radius);
+  width: 100%;
+  cursor: pointer;
+  background-color: var(--primary-color);
+  color: white;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.addBox button:hover:not(:disabled) {
+  background-color: var(--primary-hover);
+}
+
+.addBox button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.addBox button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .addBox {
+    padding: 1.5rem;
+  }
 }
 
 .container {
